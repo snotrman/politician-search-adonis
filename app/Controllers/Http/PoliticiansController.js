@@ -12,9 +12,6 @@ class PoliticiansController {
             getMemberships();
             async function getMemberships() {
                 let memberships = await Database.select('party_name', 'start_date', 'end_date').table('memberships').where('person_id', politician.person_id)
-                await convertNull(memberships.start_date);
-                await convertNull(memberships.end_date);
-                function convertNull(data) {data == "NULL" ?  data : "No Information"}
                 politician.memberships = memberships;
                 politiciansWithMemberships.push(politician)
             };
