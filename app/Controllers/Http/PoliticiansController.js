@@ -12,11 +12,25 @@ class PoliticiansController {
             getMemberships();
             async function getMemberships() {
                 let memberships = await Database.select('party_name', 'start_date', 'end_date').table('memberships').where('person_id', politician.person_id)
+                await convertNullToText(memberships.start_date);
+                await convertNullToText(memberships.end_date);
+                await humanizePartyName(memberships.party_name);
                 politician.memberships = memberships;
                 politiciansWithMemberships.push(politician)
             };
-            console.log(politiciansWithMemberships)
         });
+        function convertNullToText(data) {data == "NULL" ?  data : "No Information"}
+        function humanizePartyName(partyName) {
+            var frags = partyName.split('_');
+            for (i = 0; i < frags.length; i++) {
+                frags[i] = frags[i].charAt(0).toUpperCase() + frags[i].slice(1);
+            }
+            var removeMark = frags.join(' ').split('&#34;');
+            for (i = 0; i < removeMark.length; i++) {
+                removeMark[i] = removeMark[i].charAt(0).toUpperCase() + removeMark[i].slice(1);
+            }
+            return removeMark.join(' ');
+        };
         return getPoliticiansWithMemberships();
     };
     countAllPoliticians() {
